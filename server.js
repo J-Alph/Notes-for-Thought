@@ -1,8 +1,7 @@
-const fs = require ('fs');
+const fs = require("fs").promises;
 const express = require('express');
 const path = require('path');
-// const api = require('./routes/index.js');
-// const notes = require('./public/notes.html');
+const { v4: uuidv4 } = require('uuid');
 
 const PORT = process.env.PORT || 3001;
 
@@ -29,23 +28,31 @@ app.get('/notes', ( req, res) =>
 );
 
 
-app.get('/db', (req, res)=>{
-  res.json(`${req.method} request received`);
-
-  console.log(req.rawHeaders);
-
-  console.log(`${req.method} request receieved`)
-}
-);
-
-app.post('/db', ( req, res) =>{
-  res.json(path.join(__dirname, '/db/db.json'))
+app.get("/api/notes", (req, res) => {
+  fs.readFile("./db/db.json").then((data) => res.json(JSON.parse(data)));
+});
 
 
-  console.log(`${req.method} request receieved`)
-}
 
-);
+app.post("/api/notes", (req, res) => {
+  req.body.id = uuidv4();
+  fs.readFile("./db/db.json")
+    .then((data) => {
+      let newNotes = JSON.parse(data); //store parsed JSON into a new variable
+      newNotes.push(req.body); //push new notes into the req.body
+      return newNotes;
+    })
+    .then((notes) => {
+      return fs.writeFile(`./db/db.json`, JSON.stringify(notes)); //object Object without stringify
+    })
+    .then(() => res.json(req.body));
+});
+
+
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/index.html"));
+});
 
 // listen() method is responsible for listening for incoming connections on the specified port 
 app.listen(PORT, () =>
