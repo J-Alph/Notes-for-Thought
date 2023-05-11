@@ -7,8 +7,6 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 
-// Import custom middleware, "cLog"
-
 
 // Middleware for parsing JSON and urlencoded form data
 app.use(express.json());
@@ -43,9 +41,31 @@ app.post("/api/notes", (req, res) => {
       return newNotes;
     })
     .then((notes) => {
-      return fs.writeFile(`./db/db.json`, JSON.stringify(notes)); //object Object without stringify
+      return fs.writeFile(`./db/db.json`, JSON.stringify(notes)); 
     })
     .then(() => res.json(req.body));
+});
+
+
+
+app.delete("/api/notes/:id", (req, res) => {
+  const id = req.params.id;
+  fs.readFile("./db/db.json")
+    .then((data) => {
+      let notes = JSON.parse(data);
+      let index = notes.findIndex((note) => note.id === id);
+      if (index !== -1) {
+        notes.splice(index, 1);
+        return fs.writeFile(`./db/db.json`, JSON.stringify(notes));
+      } else {
+        throw new Error("Note not found");
+      }
+    })
+    .then(() => res.status(204).send())
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Server error");
+    });
 });
 
 
@@ -54,7 +74,7 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/index.html"));
 });
 
-// listen() method is responsible for listening for incoming connections on the specified port 
+// listen() method is responsible for listening for incoming connections 
 app.listen(PORT, () =>
   console.log(`Example app listening at http://localhost:${PORT}`)
 );
