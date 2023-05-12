@@ -27,7 +27,7 @@
   ## Questions
   -https://github.com/J-Alph
 
-  -example@gmail.com
+  https://github.com/J-Alph/Notes-for-Thought
   
   ## Contribution
   n/a
@@ -35,4 +35,4 @@
   ## Test
   n/a
 
- 
+ ![screen-gif](./public/assets/images/notetakergiffy.gif)

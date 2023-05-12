@@ -11,7 +11,7 @@ const app = express();
 // Middleware for parsing JSON and urlencoded form data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use('/api', api);
+
 
 app.use(express.static('public'));
 
@@ -30,7 +30,7 @@ app.get("/api/notes", (req, res) => {
   fs.readFile("./db/db.json").then((data) => res.json(JSON.parse(data)));
 });
 
-
+// route for posting to notes
 
 app.post("/api/notes", (req, res) => {
   req.body.id = uuidv4();
@@ -47,6 +47,7 @@ app.post("/api/notes", (req, res) => {
 });
 
 
+//route for deleting notes
 
 app.delete("/api/notes/:id", (req, res) => {
   const id = req.params.id;
